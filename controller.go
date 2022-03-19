@@ -118,7 +118,7 @@ func (c *Controller) processNextWorkItem() bool {
 		// Finally, if no error occurs we Forget this item so it does not
 		// get queued again until another change happens.
 		// c.queue.Forget(obj)
-		klog.Infof("Successfully synced '%s'", event)
+		// klog.Infof("Successfully synced '%s'", event)
 		return nil
 	}(obj)
 
@@ -131,13 +131,10 @@ func (c *Controller) processNextWorkItem() bool {
 }
 
 func (c *Controller) processPod(event Event) error {
-	klog.Info("---------------------------------------------------------\n")
-	klog.Info("processing pod in worker\n")
-	klog.Info(event)
 
 	// if main container state changed from running -> terminated and  reason is Completed, delete the pod
 	if (event.oldStatus == "Running" && event.newStatus == "Terminated") && event.reason == "Completed" {
-		klog.Info("\nMain container exited, deleting the pod %s in namespace %s\n", event.podName, event.namespace)
+		klog.Info("\nEssential container exited, deleting the pod %s in namespace %s\n", event.podName, event.namespace)
 
 		err := c.clientset.CoreV1().Pods(event.namespace).Delete(context.TODO(), event.podName, meta_v1.DeleteOptions{})
 
